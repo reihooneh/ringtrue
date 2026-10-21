@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self' blob: mediastream:; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Tune a bar | Ringtrue</title>
+  <meta name="description" content="Tap your bar near the microphone. Ringtrue hears its partials, works out how your board differs from the book, and shows the next cuts. Try it on a practice bar first.">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script type="module" src="assets/js/workshop.js"></script>
+</head>
+<body class="page-workshop">
+  <a class="skip" href="#main">Skip to the content</a>
+  <header class="top">
+    <div class="top-inner">
+      <a class="mark" href="index.html" aria-label="Ringtrue home">
+        <svg class="mark-bars" viewBox="0 0 36 22" aria-hidden="true"><rect x="1" y="2" width="6" height="18" rx="1.5"/><rect x="10" y="4" width="6" height="14" rx="1.5"/><rect x="19" y="6" width="6" height="10" rx="1.5"/><rect x="28" y="8" width="6" height="6" rx="1.5"/></svg>
+        <span>Ringtrue</span>
+      </a>
+      <nav class="nav" aria-label="Pages">
+        <a href="index.html">Home</a>
+        <a href="design.html">Design a bar</a>
+        <a href="workshop.html" aria-current="page">Tune a bar</a>
+        <a href="set.html">Play a set</a>
+        <a href="method.html">How it works</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="wrap">
+      <header class="page-head">
+        <h1>Tune a bar</h1>
+        <p class="lede">Tap the bar, see how far each partial is from its target, and get this round's cuts. Repeat until it rings true. Start with the practice bar: a simulated board whose wood isn't quite what the book says.</p>
+      </header>
+
+      <div class="split tool">
+        <div class="controls">
+          <h2>The bar</h2>
+          <fieldset>
+            <legend>Which bar</legend>
+            <div class="seg" id="source">
+              <label><input type="radio" name="source" value="practice" checked><span>Practice bar</span></label>
+              <label><input type="radio" name="source" value="mine"><span>My bar</span></label>
+            </div>
+          </fieldset>
+          <p id="bar-summary"></p>
+          <details id="mine-details">
+            <summary class="label">Enter your bar's measurements</summary>
+            <form id="mine-form" novalidate>
+              <div class="row2">
+                <div class="field"><label for="m-note">Note</label><select id="m-note"></select></div>
+                <div class="field"><label for="m-tuning">Tuning</label><select id="m-tuning"></select></div>
+              </div>
+              <div class="field"><label for="m-wood">Material</label><select id="m-wood"></select></div>
+              <div class="row2">
+                <div class="field"><label for="m-length">Length, mm</label><input id="m-length" type="number" inputmode="decimal" value="400" min="40" max="1200" step="0.5"></div>
+                <div class="field"><label for="m-width">Width, mm</label><input id="m-width" type="number" inputmode="decimal" value="53" min="10" max="150" step="0.1"></div>
+              </div>
+              <div class="row2">
+                <div class="field"><label for="m-thick">Thickness, mm</label><input id="m-thick" type="number" inputmode="decimal" value="22" min="5" max="60" step="0.1"></div>
+                <div class="field"><label for="m-centre">At the centre, mm</label><input id="m-centre" type="number" inputmode="decimal" value="10" min="2" max="60" step="0.1"></div>
+              </div>
+              <div class="row2">
+                <div class="field"><label for="m-span">Arch length, mm</label><input id="m-span" type="number" inputmode="decimal" value="190" min="0" max="1200" step="1"></div>
+                <div class="field"><label for="m-min">Thinnest allowed, mm</label><input id="m-min" type="number" inputmode="decimal" value="5.5" min="2" max="50" step="0.1"></div>
+              </div>
+              <button class="btn small" type="submit">Use these measurements</button>
+              <p class="error-text" id="mine-error" role="alert"></p>
+            </form>
+          </details>
+          <p class="fine" id="round-note">Round 1</p>
+        </div>
+
+        <div id="results">
+          <section class="panel" aria-labelledby="tap-title">
+            <h2 id="tap-title">Tap it</h2>
+            <div class="btn-row" id="tap-practice">
+              <button class="btn" type="button" id="tap-sim">Tap the practice bar</button>
+            </div>
+            <div class="btn-row" id="tap-mine" hidden>
+              <button class="btn" type="button" id="listen">Listen for a tap</button>
+              <label class="btn secondary" for="file">Open a recording</label>
+              <input class="visually-hidden" type="file" id="file" accept="audio/*,.wav,.mp3,.m4a,.ogg,.flac">
+            </div>
+            <p class="fine" id="tap-help">Hold the bar loosely at its cord holes (or rest it on its cord), tap the middle with a mallet, and let it ring.</p>
+            <p class="status" id="hear-status" role="status">Nothing heard yet.</p>
+            <figure class="figure" id="spectrum-fig" hidden>
+              <div class="svg-frame" id="spectrum"></div>
+              <figcaption>What was heard, on a scale of frequency. Numbered dots are the bar's partials; dashed lines are the targets.</figcaption>
+            </figure>
+          </section>
+
+          <section class="panel" aria-labelledby="next-title" id="next" hidden>
+            <h2 id="next-title">How far off, and what to cut</h2>
+            <div class="meters" id="meters"></div>
+            <p id="calibration"></p>
+            <p class="status good" id="verdict" hidden></p>
+            <ol class="cuts" id="cuts"></ol>
+            <figure class="figure" id="plan-fig">
+              <div class="svg-frame" id="plan"></div>
+              <figcaption>The bar from the side. Gold shows the wood to take off this round.</figcaption>
+            </figure>
+            <div class="btn-row">
+              <button class="btn" type="button" id="made">I've made these cuts</button>
+              <button class="btn secondary" type="button" id="undo" disabled>Undo the last round</button>
+            </div>
+            <p class="fine">Wood can't go back on, so make each cut a little shallower than suggested, then tap again.</p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="foot">
+    <div class="foot-inner">
+      <p>Ringtrue is open source (MIT). Everything runs in your browser: no sign-in, no tracking, and recordings never leave your device.</p>
+      <p><a href="https://github.com/reihooneh/ringtrue">Source code and tests on GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>
