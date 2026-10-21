@@ -37,8 +37,8 @@ lint:
 	  -checks='-*,bugprone-*,cert-*,clang-analyzer-*,performance-*,-bugprone-easily-swappable-parameters,-cert-err33-c,-bugprone-narrowing-conversions,-bugprone-implicit-widening-of-multiplication-result' \
 	  -- -std=c++20 -Icore
 
-test-web: wasm
-	node --test tests/web/*.test.mjs
+test-web: wasm cli
+	node --test --test-concurrency=1 tests/web/*.test.mjs
 
 test: test-core test-web
 
