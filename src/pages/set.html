@@ -1,0 +1,36 @@
+<!--{"title":"Play a set | Ringtrue","description":"Two octaves of designed marimba bars, drawn to scale and playable. Change the wood and the whole set is redesigned in your browser.","script":"set.js","nav":"set"}-->
+    <div class="wrap">
+      <header class="page-head">
+        <h1>Play a set</h1>
+        <p class="lede">Two octaves of bars, each one designed by Ringtrue and drawn to scale. Tap a bar, or play from your computer keyboard. Change the wood and the whole set is redesigned.</p>
+      </header>
+      <form class="controls" id="set-form" novalidate>
+        <div class="row3 set-row">
+          <div class="field"><label for="from">From</label><select id="from"></select></div>
+          <div class="field"><label for="to">To</label><select id="to"></select></div>
+          <div class="field"><label for="wood">Material</label><select id="wood"></select></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn" type="submit" id="go">Design this set</button>
+          <label class="check"><input type="checkbox" id="hard"> Hard mallets (brighter)</label>
+        </div>
+        <p class="status" id="status" role="status">Showing the built-in rosewood set, C4 to C6.</p>
+      </form>
+
+      <section class="section" aria-labelledby="kb-title">
+        <h2 id="kb-title" class="visually-hidden">The keyboard</h2>
+        <div class="keys-frame" id="keys"></div>
+        <p class="fine" id="keys-help">Keys A S D F G H J K L play the natural notes upward from the lowest C; W E T Y U play the sharps. Each bar is drawn at its real length, so you can see how much shorter the high notes are.</p>
+      </section>
+
+      <section class="section" aria-labelledby="list-title">
+        <h2 id="list-title">Cut list</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Note</th><th scope="col" class="r">Length</th><th scope="col" class="r wide-only">Width</th><th scope="col" class="r wide-only">Thickness</th><th scope="col" class="r">Deepest cut</th><th scope="col" class="r">Partials off by</th><th scope="col"><span class="visually-hidden">Open</span></th></tr></thead>
+            <tbody id="list"></tbody>
+          </table>
+        </div>
+        <p class="fine">Partials off by: cents from the 1 : 4 : 10 targets, for the note and its first two overtones.</p>
+      </section>
+    </div>

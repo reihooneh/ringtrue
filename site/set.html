@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self' blob: mediastream:; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Play a set | Ringtrue</title>
+  <meta name="description" content="Two octaves of designed marimba bars, drawn to scale and playable. Change the wood and the whole set is redesigned in your browser.">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script type="module" src="assets/js/set.js"></script>
+</head>
+<body class="page-set">
+  <a class="skip" href="#main">Skip to the content</a>
+  <header class="top">
+    <div class="top-inner">
+      <a class="mark" href="index.html" aria-label="Ringtrue home">
+        <svg class="mark-bars" viewBox="0 0 36 22" aria-hidden="true"><rect x="1" y="2" width="6" height="18" rx="1.5"/><rect x="10" y="4" width="6" height="14" rx="1.5"/><rect x="19" y="6" width="6" height="10" rx="1.5"/><rect x="28" y="8" width="6" height="6" rx="1.5"/></svg>
+        <span>Ringtrue</span>
+      </a>
+      <nav class="nav" aria-label="Pages">
+        <a href="index.html">Home</a>
+        <a href="design.html">Design a bar</a>
+        <a href="workshop.html">Tune a bar</a>
+        <a href="set.html" aria-current="page">Play a set</a>
+        <a href="method.html">How it works</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="wrap">
+      <header class="page-head">
+        <h1>Play a set</h1>
+        <p class="lede">Two octaves of bars, each one designed by Ringtrue and drawn to scale. Tap a bar, or play from your computer keyboard. Change the wood and the whole set is redesigned.</p>
+      </header>
+      <form class="controls" id="set-form" novalidate>
+        <div class="row3 set-row">
+          <div class="field"><label for="from">From</label><select id="from"></select></div>
+          <div class="field"><label for="to">To</label><select id="to"></select></div>
+          <div class="field"><label for="wood">Material</label><select id="wood"></select></div>
+        </div>
+        <div class="btn-row">
+          <button class="btn" type="submit" id="go">Design this set</button>
+          <label class="check"><input type="checkbox" id="hard"> Hard mallets (brighter)</label>
+        </div>
+        <p class="status" id="status" role="status">Showing the built-in rosewood set, C4 to C6.</p>
+      </form>
+
+      <section class="section" aria-labelledby="kb-title">
+        <h2 id="kb-title" class="visually-hidden">The keyboard</h2>
+        <div class="keys-frame" id="keys"></div>
+        <p class="fine" id="keys-help">Keys A S D F G H J K L play the natural notes upward from the lowest C; W E T Y U play the sharps. Each bar is drawn at its real length, so you can see how much shorter the high notes are.</p>
+      </section>
+
+      <section class="section" aria-labelledby="list-title">
+        <h2 id="list-title">Cut list</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th scope="col">Note</th><th scope="col" class="r">Length</th><th scope="col" class="r wide-only">Width</th><th scope="col" class="r wide-only">Thickness</th><th scope="col" class="r">Deepest cut</th><th scope="col" class="r">Partials off by</th><th scope="col"><span class="visually-hidden">Open</span></th></tr></thead>
+            <tbody id="list"></tbody>
+          </table>
+        </div>
+        <p class="fine">Partials off by: cents from the 1 : 4 : 10 targets, for the note and its first two overtones.</p>
+      </section>
+    </div>
+  </main>
+  <footer class="foot">
+    <div class="foot-inner">
+      <p>Ringtrue is open source (MIT). Everything runs in your browser: no sign-in, no tracking, and recordings never leave your device.</p>
+      <p><a href="https://github.com/reihooneh/ringtrue">Source code and tests on GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>

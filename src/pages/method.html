@@ -1,0 +1,59 @@
+<!--{"title":"How it works | Ringtrue","description":"The vibration model, the optimiser, the tap analysis and the cutting plan behind Ringtrue, how they are checked, and where they stop being right.","script":"method.js","nav":"method"}-->
+    <div class="wrap prose">
+      <header class="page-head">
+        <h1>How it works</h1>
+        <p class="lede">Four pieces of numerical work, all in one C++ core compiled to WebAssembly: a model of the bar, an optimiser for the cut, a listener for taps, and a planner for the next cuts.</p>
+      </header>
+
+      <h2>1. The bar is a beam</h2>
+      <p>A marimba bar rests on a cord at two points and is otherwise free, so it vibrates like a beam with free ends. A thin beam's partials sit at 1, 2.76 and 5.40 times the note. Marimba bars aren't thin, though: a middle-C bar is about 22 mm thick and 40 cm long. In a bar that stubby, the material shears as well as bends, and each slice of it has to rotate back and forth, which takes energy. Both effects pull the upper partials down.</p>
+      <p>So Ringtrue uses the <em>Timoshenko</em> beam model, which includes shear and rotary inertia, rather than the simpler Euler–Bernoulli one. For the plain middle-C blank it gives partials at 2.55 and 4.52 times the note, not 2.76 and 5.40. That difference is bigger than any tuning error a player would accept, so the simpler model would design bars that are audibly out.</p>
+
+      <h2>2. Finite elements</h2>
+      <p>The bar is cut into 300 short pieces along its length, each with its own thickness, so any undercut shape can be described. Every joint between pieces has two unknowns: how far it moves up or down, and how much it tilts. Each piece contributes a small stiffness matrix (bending plus shear) and a mass matrix (moving plus rotating mass), and these are added into two large matrices, <code>K</code> and <code>M</code>.</p>
+      <p class="formula">K φ = ω² M φ</p>
+      <p>The bar's partials are the solutions of this equation: each ω is 2π times a partial's frequency and φ is the matching mode shape. Each joint only touches its neighbours, so both matrices are <em>banded</em>: only a narrow stripe near the diagonal is ever non-zero. Storing and factorising just that stripe makes a solve take a few milliseconds.</p>
+      <p>Two details matter. A short element can't bend smoothly enough if shear is measured all along it, and it ends up far too stiff ("shear locking"); measuring shear only at its middle avoids this. And a free bar can slide and rock without bending at all, so <code>K</code> has two zero-frequency motions; solving with a slightly shifted matrix <code>K + sM</code> keeps the arithmetic well behaved.</p>
+
+      <h2>3. Solving for the partials</h2>
+      <p>Only the lowest few partials matter, so Ringtrue uses <em>subspace iteration</em>: start from ten guessed shapes (two for sliding and rocking, eight cosine waves), repeatedly solve the shifted system so the low-frequency content grows, then find the best combinations of those ten shapes (a small Rayleigh–Ritz problem solved by Jacobi rotations). It usually settles to eleven significant figures in about ten rounds.</p>
+
+      <h2>4. Designing the cut</h2>
+      <p>The arch under the bar is described by four depths, spaced from the centre outward, joined by a <em>monotone cubic</em> curve. That kind of curve never overshoots between the points it passes through, so the cut can never be deeper than its deepest control point, and so never thinner than the minimum you set. Add how far along the bar the arch reaches, and the bar's length, and there are six numbers to choose.</p>
+      <p>A Levenberg–Marquardt optimiser chooses them so each tuned partial's error, in cents, goes to zero. It starts from four shapes a maker might try first and keeps the best. Gentle extra terms prefer shallower cuts and a simple arch, deepest in the middle, when that costs nothing in tune. If a short, thick bar can't reach the ratios at all, the note itself is given priority, and the misses are reported rather than hidden. A final step rescales the length so the note is exactly in tune.</p>
+
+      <h2>5. Hearing a tap</h2>
+      <p>The recording is searched for the tap (the first sample at half the loudest level), and a few milliseconds of mallet click are skipped. The next stretch of sound is weighted by the falling half of a Hann window and transformed with an FFT. The weighting keeps full weight on the first moments after the tap, because a wooden bar's upper partials die away within a few hundredths of a second. Peaks are refined between FFT bins by fitting a parabola, which is accurate to well under a cent. Once the model has been calibrated, each partial is looked for near where the model predicts it.</p>
+
+      <h2>6. Calibrating to your board, then planning cuts</h2>
+      <p>Wood varies by 20% or more from board to board, so the book value is only a starting point. If the second partial was heard, the shear stiffness is adjusted until the model's ratio of the first two partials matches the bar's. Then the overall stiffness is scaled so the first partial matches exactly. From then on the model predicts <em>this</em> bar.</p>
+      <p>Next it measures, for 24 places along the bar (plus "trim both ends"), how many cents each partial would move per millimetre of wood removed there. Choosing how much to remove at each place is then a least-squares problem with a twist: amounts can only be positive, because wood can't be put back. It is solved by projected coordinate descent. The plan is cut down to at most four cuts, each at most 2 mm deep in one round, and checked with full solves before it is shown.</p>
+      <p class="note">On a simulated bar that started 256 cents sharp, with wood 7% stiffer than the book and a quarter stiffer in shear, this loop had all three partials within a cent by the fourth tap. That run is one of the automated tests.</p>
+
+      <h2>7. Checked against beam theory, right now</h2>
+      <p>For a slender bar, the exact free–free frequencies are known in closed form. This table compares them with the core's answers, computed just now in your browser by the same WebAssembly module the designer uses:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th scope="col">Partial</th><th scope="col" class="r">Exact (Hz)</th><th scope="col" class="r">Ringtrue (Hz)</th><th scope="col" class="r">Difference</th></tr></thead>
+          <tbody id="check"><tr><td colspan="4">Computing…</td></tr></tbody>
+        </table>
+      </div>
+      <p class="fine" id="check-note">A 500 × 40 × 3 mm aluminium strip with stiff shear, where the two theories should nearly agree.</p>
+      <p>The test suite (run on every change, under AddressSanitizer and UndefinedBehaviorSanitizer) also checks the maths library against the C library, the FFT against a direct transform, mesh convergence, scaling laws, symmetric and antisymmetric mode shapes, node positions, the optimiser on marimba and xylophone bars, the hearing on synthetic taps, the full tap-and-cut loop, and that every request field refuses bad values. Browser tests load every page at three screen sizes and fail on overlapping text or sideways scrolling.</p>
+
+      <h2>8. Where it stops being right</h2>
+      <ul>
+        <li><strong>Only bending up and down.</strong> Real bars also twist and sway sideways. Those modes can land near a tuned partial and buzz; makers check for them by tapping the corners. The model doesn't include them.</li>
+        <li><strong>Wood is not uniform.</strong> The model treats the board as the same all the way through. Knots, grain run-out and moisture differences shift partials in ways no tap can untangle. The calibration absorbs the average.</li>
+        <li><strong>Temperature and humidity.</strong> Wooden bars go flat as they warm and as they take up moisture, so tune at the temperature the instrument will be played at.</li>
+        <li><strong>Resonators.</strong> The tube length on the home page uses a simple quarter-wave rule with an end correction. Real tubes are tuned by ear.</li>
+        <li><strong>The shape you cut.</strong> The plan assumes cuts with smooth edges about 25 mm wide. Measure your bar's underside now and then and enter it on the workshop page, so the model keeps up with the bar.</li>
+      </ul>
+
+      <h2>Sources</h2>
+      <ul>
+        <li>Wood properties: <a href="https://www.wood-database.com/honduran-rosewood/">The Wood Database</a> (rosewood, bubinga, padauk, hard maple) and <a href="https://woodsolutions.com.au/wood-species/jarrah">WoodSolutions</a> (jarrah).</li>
+        <li>Optimising bar shapes for several partials: R. Petrolito and K. Legge, <a href="https://espace.curtin.edu.au/handle/20.500.11937/68">Automatic multi-modal tuning of idiophone bars</a>, Curtin University.</li>
+        <li>Practical tuning, including twisting and sideways modes: J. La Favre, <a href="https://lafavre.us/marimba-bars.htm">marimba bar notes</a>, and <a href="https://www.mmdigest.com/gallery/technical/xylobars">The Construction and Tuning of Vibrating Bars</a>.</li>
+      </ul>
+    </div>
