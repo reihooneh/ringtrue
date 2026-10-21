@@ -1,0 +1,5 @@
+build/
+node_modules/
+site/assets/ringtrue.wasm
+test-results/
+*.log
