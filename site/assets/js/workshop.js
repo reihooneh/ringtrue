@@ -160,6 +160,7 @@ async function advise(heard) {
   const verdict = $('verdict');
   verdict.hidden = !a.done;
   cuts.hidden = a.done;
+  $('predict').textContent = '';
   if (a.done) {
     verdict.textContent = `In tune: the note is within 3 cents and the overtones within 5 and 8. ${real ? `The practice board was really ${((real.mat.E / bar.mat.E - 1) * 100).toFixed(1)}% off the book stiffness, and it took ${round} ${round === 1 ? 'tap' : 'taps'}.` : 'Seal the bar and you’re done.'}`;
     drawPlan = (w) => profileDrawing({ length: bar.length, thickness: bar.thickness, profile: bar.table, width: w });
@@ -186,10 +187,9 @@ async function advise(heard) {
   drawPlan = (w) => profileDrawing({ length: bar.length, thickness: bar.thickness, profile: bar.table, plan: planOnCurrent, width: w });
   redrawPlan();
   const last = a.steps[a.steps.length - 1];
-  if (last) {
-    const pred = last.after.slice(0, n).map((c, i) => `partial ${i + 1} ${fmt.cents(c)}`).join(', ');
-    cuts.append(el('li', {}, [el('p', { text: `Then tap again. Predicted afterwards: ${pred}.` })]));
-  }
+  $('predict').textContent = last
+    ? `Then tap again. Predicted afterwards: ${last.after.slice(0, n).map((c, i) => `partial ${i + 1} ${fmt.cents(c)}`).join(', ')}.`
+    : '';
 }
 
 async function guarded(fn) {

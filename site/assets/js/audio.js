@@ -126,6 +126,7 @@ export async function decodeFile(file) {
     throw new Error('That file could not be read as audio. Try a WAV or MP3 recording.');
   }
   if (audio.duration > FILE_LIMITS.seconds) throw new Error('That recording is longer than 20 seconds. Trim it to the tap.');
+  if (audio.length > 1_000_000) throw new Error('That recording has too many samples for its length. Trim it to a few seconds around the tap.');
   const n = audio.length;
   const mono = new Float32Array(n);
   for (let c = 0; c < audio.numberOfChannels; c++) {

@@ -191,7 +191,7 @@ export function meter(label, value, k) {
   return el('div', { class: 'meter' }, [
     el('span', { text: label }),
     el('span', { class: 'meter-track', role: 'img', 'aria-label': `${label}: ${fmt.cents(value)} from the target` }, [dot]),
-    el('span', { class: 'meter-val', text: Math.abs(value) > 50 ? `${fmt.cents(value)} (off scale)` : fmt.cents(value) }),
+    el('span', { class: 'meter-val', text: fmt.cents(value), title: Math.abs(value) > 50 ? 'Off the scale of this meter' : null }),
   ]);
 }
 

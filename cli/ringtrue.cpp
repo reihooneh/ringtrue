@@ -19,6 +19,9 @@ namespace {
 
 using namespace rt;
 
+// Rounds away "-0.00".
+double tidy(double v) { return std::fabs(v) < 0.005 ? 0.0 : v; }
+
 int usage(const char* msg) {
   if (msg) std::fprintf(stderr, "ringtrue: %s\n", msg);
   std::fprintf(stderr,
@@ -168,7 +171,7 @@ void print_text_bar(int midi, const Options& o) {
   for (int k = 0; k < 3; ++k) {
     double target = k == 0 ? g_in[api::I_F1] : g_in[api::I_F1] * (k == 1 ? o.r2 : o.r3);
     if (k < o.count)
-      std::printf("  %d      %9.2f   %9.2f   %+7.2f %s\n", k + 1, target, g_out[api::O_FREQ0 + k], g_out[api::O_ERR0 + k],
+      std::printf("  %d      %9.2f   %9.2f   %+7.2f %s\n", k + 1, target, g_out[api::O_FREQ0 + k], tidy(g_out[api::O_ERR0 + k]),
                   g_out[api::O_MET0 + k] > 0 ? "ok" : "MISSED");
     else
       std::printf("  %d          -       %9.2f      (not tuned)\n", k + 1, g_out[api::O_FREQ0 + k]);
@@ -224,8 +227,8 @@ int cmd_set(Options o) {
     } else {
       char name[16];
       note_name(midi, name, sizeof name);
-      std::printf("%-4s %6.1f mm  cents %+6.1f %+6.1f %+6.1f\n", name, g_out[api::O_LENGTH] * 1000, g_out[api::O_ERR0],
-                  g_out[api::O_ERR0 + 1], g_out[api::O_ERR0 + 2]);
+      std::printf("%-4s %6.1f mm  cents %+6.1f %+6.1f %+6.1f\n", name, g_out[api::O_LENGTH] * 1000, tidy(g_out[api::O_ERR0]),
+                  tidy(g_out[api::O_ERR0 + 1]), tidy(g_out[api::O_ERR0 + 2]));
     }
   }
   if (o.json) std::printf("]\n");

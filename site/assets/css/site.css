@@ -192,7 +192,7 @@ td.r, th.r { text-align: right; }
 
 /* Cents meters */
 .meters { display: grid; gap: 12px; margin: 6px 0 20px; }
-.meter { display: grid; grid-template-columns: minmax(84px, 120px) minmax(0, 1fr) 76px; align-items: center; gap: 10px; font-family: var(--display); font-stretch: 94%; font-size: .95rem; }
+.meter { display: grid; grid-template-columns: minmax(70px, 110px) minmax(0, 1fr) 64px; align-items: center; gap: 10px; font-family: var(--display); font-stretch: 94%; font-size: .95rem; }
 .meter-track { position: relative; height: 22px; background: linear-gradient(90deg, #f1dfcf 0 30%, #dcebdc 45% 55%, #f1dfcf 70% 100%); border-radius: 6px; }
 .meter-track::after { content: ""; position: absolute; left: 50%; top: 2px; bottom: 2px; width: 1px; background: var(--ink); }
 .meter-dot { position: absolute; top: 3px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; border: 2px solid #fff; }
@@ -212,6 +212,7 @@ td.r, th.r { text-align: right; }
 /* Keyboard (the set page) */
 .keys-frame { background: radial-gradient(130% 120% at 50% 0%, var(--stage-2), var(--stage)); border-radius: 18px; padding: 18px 14px; }
 .keys-frame svg { width: 100%; height: auto; }
+.keys-frame + p { margin-top: 12px; }
 .keys-frame text { font-family: var(--display); }
 .bar-key { cursor: pointer; }
 .bar-key.struck rect.wood { animation: struck .4s ease-out; }
