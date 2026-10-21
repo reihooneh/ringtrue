@@ -248,6 +248,21 @@ static void test_fft_and_hearing() {
     for (int k = 0; k < 3; ++k) CHECK(std::fabs(m::cents(g_hear.partial[k], f[k])) < 0.3, "partial %d: %.3f", k, g_hear.partial[k]);
     CHECK(std::fabs(g_hear.onset - 0.3) < 0.01, "onset %.4f", g_hear.onset);
   }
+  // A wooden bar's upper partials die away in a few hundredths of a second; they must still be found.
+  {
+    const int n = 96000;
+    std::vector<float> z(static_cast<size_t>(n));
+    const double fz[3] = {261.6, 1046.5, 2616.3}, tau[3] = {0.3, 0.06, 0.02}, az[3] = {0.5, 0.2, 0.06};
+    for (int i = 0; i < n; ++i) {
+      double t = i / 48000.0 - 0.1, v = (rnd() - 0.5) * 0.002;
+      if (t >= 0)
+        for (int k = 0; k < 3; ++k) v += az[k] * std::exp(-t / tau[k]) * std::sin(2 * M_PI * fz[k] * t);
+      z[static_cast<size_t>(i)] = static_cast<float>(v);
+    }
+    hear(z.data(), n, 48000, nullptr, g_hear);
+    CHECK(g_hear.found == 3, "fast partials found: %d", g_hear.found);
+    for (int k = 0; k < g_hear.found; ++k) CHECK(std::fabs(m::cents(g_hear.partial[k], fz[k])) < 1.0, "fast partial %d: %.3f", k, g_hear.partial[k]);
+  }
   // With a prediction, a strong out-of-place peak doesn't fool it.
   const double f4[4] = {261.9, 1043.7, 1900, 2621.4}, a4[4] = {0.5, 0.2, 0.3, 0.08};
   auto y = synth_tap(f4, a4, 4, 48000, 2.0, 0.001, 0.1);

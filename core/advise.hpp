@@ -35,7 +35,7 @@ struct CutStep {
 
 struct Advice {
   bool ok;
-  bool done;                 // already within 3 cents on every measured, targeted partial
+  bool done;                 // in tune: the note within 3 cents, partials 2 and 3 within 5 and 8
   bool flat;                 // the note is too low: the ends must be trimmed to raise it
   double stiffness_scale;    // multiply the wood's E by this to match the bar
   double shear_scale;        // and its G by this (1 if only one partial was heard)

@@ -73,13 +73,11 @@ struct Options {
   bool mat_given = false;
   double r2 = 4, r3 = 10;
   int count = 3;
-  bool tuning_given = false;
   double width = -1, thick = -1, min_thick = -1, length = -1;
   bool json = false;
 };
 
 bool parse_tuning(const char* s, Options& o) {
-  o.tuning_given = true;
   if (std::strcmp(s, "marimba") == 0) { o.r2 = 4; o.r3 = 10; o.count = 3; return true; }
   if (std::strcmp(s, "xylophone") == 0) { o.r2 = 3; o.r3 = 6; o.count = 3; return true; }
   if (std::strcmp(s, "vibraphone") == 0) {
@@ -210,19 +208,13 @@ int cmd_design(const Options& o) {
   return st;
 }
 
-// A range of notes. High bars can't reach 1:4:10 at sensible thicknesses, so unless a tuning was
-// given, the set follows common practice: three partials low down, two in the upper middle, and
-// just the note at the very top.
+// A range of notes, all with the same tuning, and sizes graded along the keyboard.
 int cmd_set(Options o) {
   if (o.from < 0 || o.to < 0 || o.to < o.from || o.to - o.from > 60) return usage("give --from and --to, at most 5 octaves apart");
   bool any_missed = false;
   if (o.json) std::printf("[");
   for (int midi = o.from; midi <= o.to; ++midi) {
-    Options n = o;
-    if (!o.tuning_given) {
-      if (midi >= 91) n.count = 1;        // above G6
-      else if (midi >= 80) n.count = 2;   // G#5 and up
-    }
+    const Options& n = o;
     int st = run_design(n, midi);
     if (st < 0 || st > 1) return st;
     any_missed = any_missed || st == 1;

@@ -102,8 +102,10 @@ void hear(const float* x, int count, double rate, const double* expect, Hearing&
   for (int i = 0; i < n; ++i) {
     double v = 0;
     if (i < nw) {
-      double hann = 0.5 - 0.5 * m::cos(2 * m::PI * i / (nw - 1));
-      v = x[start + i] * hann;
+      // The falling half of a Hann window: full weight at the tap, where the fast-dying upper
+      // partials are, tapering to zero at the end.
+      double taper = 0.5 + 0.5 * m::cos(m::PI * i / (nw - 1));
+      v = x[start + i] * taper;
     }
     g_re[i] = v;
     g_im[i] = 0;

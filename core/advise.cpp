@@ -9,6 +9,8 @@ constexpr int ADV_ELEMS = 200;
 constexpr double PROBE_DEPTH = 0.0003;  // 0.3 mm test cut for the sensitivities
 constexpr double PROBE_TRIM = 0.0005;   // 0.5 mm off each end
 constexpr double PITCH_WEIGHT = 4;      // the note itself matters most
+// "In tune": the note within 3 cents, the overtones within 5 and 8 (the ear is less exact up there).
+constexpr double DONE_CENTS[3] = {3, 5, 8};
 
 Bar g_base, g_work, g_probe, g_tmp;
 Modes g_md;
@@ -122,7 +124,7 @@ void advise(const Bar& bar, double min_thickness, const Measured& heard, const T
   }
   out.done = true;
   for (int i = 0; i < t.count; ++i)
-    if (m::abs(out.now_error[i]) > 3) out.done = false;
+    if (m::abs(out.now_error[i]) > DONE_CENTS[i]) out.done = false;
   out.flat = out.now_error[0] < -3;
   out.ok = true;
   if (out.done) return;
