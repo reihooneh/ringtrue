@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self' blob: mediastream:; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <title>Design a bar | Ringtrue</title>
+  <meta name="description" content="Choose a note, a tuning and a wood. Ringtrue finds the bar's length and the arch under it, and gives you a full-size template to print.">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script type="module" src="assets/js/designer.js"></script>
+</head>
+<body class="page-design">
+  <a class="skip" href="#main">Skip to the content</a>
+  <header class="top">
+    <div class="top-inner">
+      <a class="mark" href="index.html" aria-label="Ringtrue home">
+        <svg class="mark-bars" viewBox="0 0 36 22" aria-hidden="true"><rect x="1" y="2" width="6" height="18" rx="1.5"/><rect x="10" y="4" width="6" height="14" rx="1.5"/><rect x="19" y="6" width="6" height="10" rx="1.5"/><rect x="28" y="8" width="6" height="6" rx="1.5"/></svg>
+        <span>Ringtrue</span>
+      </a>
+      <nav class="nav" aria-label="Pages">
+        <a href="index.html">Home</a>
+        <a href="design.html" aria-current="page">Design a bar</a>
+        <a href="workshop.html">Tune a bar</a>
+        <a href="set.html">Play a set</a>
+        <a href="method.html">How it works</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="wrap">
+      <header class="page-head">
+        <h1>Design a bar</h1>
+        <p class="lede">Choose the note, the tuning and the wood. Ringtrue finds the length and the arch under the bar, then gives you a full-size template to print.</p>
+      </header>
+      <div class="split tool">
+        <form class="controls" id="form" novalidate>
+          <h2>Your bar</h2>
+          <div class="field">
+            <label for="note">Note</label>
+            <select id="note" name="note"></select>
+          </div>
+          <fieldset>
+            <legend>Tuning</legend>
+            <div class="seg" id="tuning"></div>
+            <p class="hint" id="tuning-hint"></p>
+          </fieldset>
+          <div class="field">
+            <label for="wood">Material</label>
+            <select id="wood" name="wood"></select>
+            <span class="hint" id="wood-hint"></span>
+          </div>
+          <fieldset>
+            <legend>Size of the blank, in mm</legend>
+            <div class="row3">
+              <div class="field"><label for="width">Width</label><input id="width" type="number" inputmode="decimal" min="10" max="150" step="0.1"></div>
+              <div class="field"><label for="thick">Thickness</label><input id="thick" type="number" inputmode="decimal" min="5" max="60" step="0.1"></div>
+              <div class="field"><label for="min">Thinnest</label><input id="min" type="number" inputmode="decimal" min="2" max="50" step="0.1"></div>
+            </div>
+            <p class="hint">"Thinnest" is the least wood the arch may leave. Sizes start graded like a real keyboard.</p>
+          </fieldset>
+          <fieldset>
+            <legend>Length</legend>
+            <div class="seg" id="length-mode">
+              <label><input type="radio" name="lenmode" value="free" checked><span>Choose it for me</span></label>
+              <label><input type="radio" name="lenmode" value="fixed"><span>I have a length</span></label>
+            </div>
+            <div class="field" id="length-field" hidden>
+              <label for="length">Length in mm</label>
+              <input id="length" type="number" inputmode="decimal" min="40" max="1200" step="0.5">
+            </div>
+          </fieldset>
+          <button class="btn" type="submit" id="go">Design the bar</button>
+          <p class="error-text" id="form-error" role="alert"></p>
+        </form>
+
+        <div id="results">
+          <p class="status busy" id="status" role="status">Designing a middle C marimba bar…</p>
+          <figure class="stage" id="stage">
+            <div class="stage-view" id="stage-view"></div>
+            <div class="stage-bar">
+              <div class="mode-picker" role="group" aria-label="Show the bar bending in">
+                <button type="button" data-step="0" aria-pressed="true">Partial 1</button>
+                <button type="button" data-step="1" aria-pressed="false">Partial 2</button>
+                <button type="button" data-step="2" aria-pressed="false">Partial 3</button>
+              </div>
+              <button type="button" class="strike" id="play">Strike the bar</button>
+            </div>
+          </figure>
+
+          <section class="panel" aria-labelledby="dims-title">
+            <h2 id="dims-title">Cut it like this</h2>
+            <dl class="facts" id="facts"></dl>
+            <figure class="figure">
+              <div class="svg-frame" id="profile"></div>
+              <figcaption>Side view. The arch is cut from the underside; the dashed line is the uncut bottom. Drill the cord holes through the width at the marked points, where the bar doesn't move.</figcaption>
+            </figure>
+            <div class="btn-row">
+              <button class="btn" type="button" id="dl-svg">Download the full-size template</button>
+              <button class="btn secondary" type="button" id="dl-csv">Download the measurements</button>
+              <a class="btn secondary" id="to-workshop" href="workshop.html">Tune this bar</a>
+            </div>
+            <p class="fine">The template prints at true size: print at 100% (no "fit to page"). Bars longer than 270 mm need A3, or two A4 sheets taped together.</p>
+          </section>
+
+          <section class="panel" aria-labelledby="partials-title">
+            <h2 id="partials-title">How it will sound</h2>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th scope="col">Partial</th><th scope="col" class="r">Target</th><th scope="col" class="r">This bar</th><th scope="col" class="r">Off by</th><th scope="col">Check</th></tr></thead>
+                <tbody id="partials"></tbody>
+              </table>
+            </div>
+            <p class="fine" id="advice"></p>
+            <figure class="figure">
+              <div class="svg-frame" id="modes"></div>
+              <figcaption>How the bar bends in each partial. The circles are nodes: points that stay still.</figcaption>
+            </figure>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+  <footer class="foot">
+    <div class="foot-inner">
+      <p>Ringtrue is open source (MIT). Everything runs in your browser: no sign-in, no tracking, and recordings never leave your device.</p>
+      <p><a href="https://github.com/reihooneh/ringtrue">Source code and tests on GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!--{"title":"Ringtrue: tune marimba and xylophone bars","description":"Design the arch cut under a marimba or xylophone bar so its overtones land in tune, then let your phone listen to the real bar and say where to take wood off next.","script":"home.js","nav":"index"}-->
+    <div class="wrap">
+      <section class="hero" aria-labelledby="hero-title">
+        <div>
+          <h1 id="hero-title">Make a bar that rings true.</h1>
+          <p class="lede">A marimba bar is only a plank until its underside is carved. Ringtrue works out that arch so the bar's overtones land in tune, then listens to your real bar and says where to take wood off next.</p>
+          <div class="actions">
+            <a class="btn" href="design.html">Design a bar</a>
+            <a class="btn secondary" href="workshop.html">Tune a practice bar</a>
+          </div>
+        </div>
+        <figure class="stage" id="hero" aria-label="A rosewood marimba bar for middle C, on its cord over the resonator tube">
+          <div class="stage-view" id="hero-view"></div>
+          <div class="stage-bar">
+            <div class="mode-picker" role="group" aria-label="Show the bar bending in">
+              <button type="button" data-step="0" aria-pressed="true">Partial 1</button>
+              <button type="button" data-step="1" aria-pressed="false">Partial 2</button>
+              <button type="button" data-step="2" aria-pressed="false">Partial 3</button>
+            </div>
+            <button type="button" class="strike" id="strike">Strike the bar</button>
+          </div>
+          <p class="stage-readout" id="hero-readout" aria-live="polite">Loading the bar…</p>
+        </figure>
+      </section>
+
+      <section class="section" aria-labelledby="why-title">
+        <div class="split even">
+          <div>
+            <h2 id="why-title">Why the cut matters</h2>
+            <p>Strike a plain, uncut bar and you hear a note plus overtones at <span id="plain-r2">2.55</span> and <span id="plain-r3">4.52</span> times its frequency (for a bar this thick; a thin one gives 2.76 and 5.40). Those don't belong to any chord, so the note sounds clangy and its pitch is hard to pin down.</p>
+            <p>Carving an arch underneath lowers the note and pulls the overtones into place. On a concert marimba the second partial sits exactly two octaves up (4 times the note) and the third at 10 times. That is what makes a marimba sound warm instead of like a tapped plank.</p>
+            <div class="btn-row">
+              <button class="btn secondary small" type="button" id="play-plain">Play the plain bar</button>
+              <button class="btn small" type="button" id="play-tuned">Play the tuned bar</button>
+            </div>
+          </div>
+          <figure class="figure">
+            <div class="svg-frame" id="ladder"></div>
+            <figcaption>The first three partials of a middle-C bar, before and after the cut, on a scale of frequency. Grey ticks mark whole-number multiples of the note.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="steps-title">
+        <h2 id="steps-title">From board to note</h2>
+        <ol class="steps">
+          <li><h3>Design</h3><p>Pick the note, the wood and the bar's size. Ringtrue finds the length and the arch, and gives you a full-size template to print.</p></li>
+          <li><h3>Rough it out</h3><p>Cut the arch a little shallow. Wood can only come off, never go back on, so it's better to start sharp.</p></li>
+          <li><h3>Tap and trim</h3><p>Tap the bar near your phone. Ringtrue hears its partials, works out how your board differs from the book, and shows the next cuts.</p></li>
+        </ol>
+      </section>
+
+      <section class="section" aria-labelledby="inside-title">
+        <div class="split even">
+          <div>
+            <h2 id="inside-title">What's inside</h2>
+            <p>The maths runs in your browser: a C++ model of the bar as a beam that bends and shears, compiled to WebAssembly. It solves for the bar's partials, fits the cut with a least-squares optimiser, and finds the partials in a recording.</p>
+            <p><a href="method.html">How it works, how it's checked, and where it stops being right</a></p>
+          </div>
+          <dl class="facts" id="facts">
+            <div><dt>Model</dt><dd>Timoshenko beam</dd></div>
+            <div><dt>Core</dt><dd>C++ in WebAssembly</dd></div>
+            <div><dt>Recordings sent anywhere</dt><dd>None</dd></div>
+          </dl>
+        </div>
+      </section>
+    </div>
